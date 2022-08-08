@@ -1,0 +1,41 @@
+services:
+  postgres:
+    container_name: amigoscode_pg
+    image: postgres
+    environment:
+      - POSTGRES_USER=amigoscode
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  customer:
+    container_name: amigoscode_customer
+    image: customer:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - postgres
+    restart: always
+    depends_on:
+      - postgres
+
+  rabbitmq:
+    container_name: amigoscode_mq
+    image: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
