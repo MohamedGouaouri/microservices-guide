@@ -10,6 +10,8 @@ const customerRouter = require("./routes/customers.route");
 
 const { consulClientBootstrap } = require("./discovery/discovery");
 const { mqDisconnect } = require("./queue/bootstrap_mq")
+const {initTracer} = require("jaeger-client");
+const {tracingMiddleWare} = require("./tracing/tracer");
 
 
 
@@ -17,6 +19,9 @@ const { mqDisconnect } = require("./queue/bootstrap_mq")
 dotenv.config({
     path: ".env"
 })
+
+const app = express()
+app.set("port", 3000)
 
 const options = {
     definition: {
@@ -30,10 +35,9 @@ const options = {
 };
 
 const swaggerDocs = swaggerJsDoc(options);
-
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs))
 
-mongoose.connect(process.env.MONGO_URL, {
+mongoose.connect("mongodb+srv://mohammed:mohammed@cluster0.04vk7.mongodb.net/?retryWrites=true&w=majority", {
     useNewUrlParser: true
 }).then(() => {
     console.log("Connected to db")
@@ -43,8 +47,7 @@ mongoose.connect(process.env.MONGO_URL, {
 })
 
 
-const app = express()
-app.set("port", 3000)
+
 
 //// Apply middlewares
 // Allow cross-origin
@@ -54,10 +57,14 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+// init tracing
+// app.use(tracingMiddleWare)
+
 // consulClientBootstrap()
 
 
-app.get("/", (req, res) => {
+
+app.get("/api", (req, res) => {
     res.json("API is running")
 })
 
@@ -67,8 +74,7 @@ app.use("/api/customers", customerRouter)
 process.on("beforeExit", async () => {
     // Close all connections
     await mongoose.connection.close()
-
-    // 
+    //
     await mqDisconnect()
 })
 
