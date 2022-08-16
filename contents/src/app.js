@@ -3,6 +3,31 @@ const {ApolloServer, gql} = require("apollo-server-express")
 
 const app = express()
 
+
+let users = [
+    {
+        id: 1,
+        username: "Mohammed",
+        email: "mohammed@esi.dz"
+    },
+    {
+        id: 2,
+        username: "Younes",
+        email: "younes@esi.dz"
+    },
+    {
+        id: 3,
+        username: "Ania",
+        email: "ania@esi.dz"
+    },
+    {
+        id: 4,
+        username: "Bhd_Sd",
+        email: "bhd_sd@esi.dz"
+    },
+]
+let lastId = 4;
+
 /*
 * The GraphQL schema provided to the Apollo Server
 * is all the available data for reading and writing
@@ -27,6 +52,10 @@ const schema = gql`
         title: String!,
         authors: [User]
     }
+    
+    type Mutation {
+        createUser(username: String!, email: String!): User!
+    }
 `
 /*
 * Resolvers are used to return data for fields
@@ -40,25 +69,11 @@ const resolvers = {
         // args is an object of key value pairs that correspond to passed parameters
         user: (parent, args) => {
             const {id} = args
-             return id == 1 ? {
-                 id: 1,
-                 username: 'Mohammed',
-                 email: "mohammed@esi.dz"
-             }: null
+             return users.filter(u => u.id == id)
 
         },
         users: () => {
-            return [{
-                id: 1,
-                username: 'Mohammed',
-                email: "mohammed@esi.dz"
-            },
-                {
-                    id: 2,
-                    username: 'Ania',
-                    email: "Ania@esi.dz"
-                }
-            ]
+            return users
         },
 
         posts: () => {
@@ -77,14 +92,18 @@ const resolvers = {
 
     },
 
-    User: {
-        username: (parent) => 'Hans',
-    },
 
-    Post: {
-        title: () => {
-            return 'testing'
-        },
+    Mutation: {
+        createUser: (parent, {username}, {email}) => {
+            const user = {
+                id: ++lastId,
+                username: username,
+                email: email
+            }
+            users.push(user)
+            return user
+        }
+
     }
 
 }
