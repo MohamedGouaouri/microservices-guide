@@ -54,7 +54,9 @@ const schema = gql`
     }
     
     type Mutation {
-        createUser(username: String!, email: String!): User!
+        createUser(username: String!, email: String!): User!,
+        deleteUser(id: ID!): Boolean!,
+#        updateUser(id: ID!, username: String, email: String): User
     }
 `
 /*
@@ -102,7 +104,30 @@ const resolvers = {
             }
             users.push(user)
             return user
-        }
+        },
+
+        deleteUser: (parent, {id}) => {
+            const {[id]: user, ...otherUsers} = users
+            if (!user) {
+                return false;
+            }
+            users = otherUsers
+            return true
+        },
+
+        // updateUser: (parent, {id}, {username}, {email}) => {
+        //     const {[id]: user, ...otherUsers} = users
+        //     if (!user) {
+        //         return null;
+        //     }
+        //     if (username){
+        //         user.username = username
+        //     }
+        //     if (email){
+        //         user.email = email
+        //     }
+        //
+        // }
 
     }
 
