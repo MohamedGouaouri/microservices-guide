@@ -38,18 +38,28 @@ GraphQL is based on 4 main concepts:
 #### Schema
 We can think of it as the data layout and set of resources that the backend exposes. \
 In the schema we define the data that we provide and its shape so clients know how to request it.
-#### Resolvers
-GraphQL resolvers are just functions to be executed by the graphql engine to make data available for clients.
+
+#### Query
+
 
 #### Mutations
 Mutations are just functions definitions in the schema and have resolver functions, they intend to mutate the data 
 in the backend
+
+To achieve querying the data or mutating it we rely on graphql resolvers
+
+##### Resolvers
+GraphQL resolvers are just functions to be executed by the graphql engine to make data available for clients.
+
+On last operation is subscription
 #### Subscriptions
 Like queries, subscriptions enable you to fetch data. But they are long-lasting operations 
 that can change their result over time. \
 They can maintain an active connection to your GraphQL server 
 (most commonly via WebSocket), enabling the server to push updates to 
 the subscription's result.
+
+
 
 An example of a graphql query is the following which fetches github user's info
 ```graphql
@@ -76,6 +86,14 @@ An example of a graphql query is the following which fetches github user's info
 }
 ```
 We easily that we request just what we want instead of parsing that long json data.
+
+[comment]: <> (Build content microservice operations using graphql)
+
+Let's see how we can build our own graphql server using our tiny node service which has
+two entities, user and post. \
+First thing first is our schema
+
+
 
 For more details about it, checkout:
 * The [official documentation](https://graphql.org/learn/)
